@@ -19,6 +19,9 @@ Use with `ampersand-form-view`:
 
 ````javascript
 
+var FormView = require('ampersand-form-view');
+var FileDropView = require('ampersand-file-drop-view');
+
 new FormView({
 	
 	fields: function() {
