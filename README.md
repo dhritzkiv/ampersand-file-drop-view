@@ -36,6 +36,12 @@ new FormView({
 });
 ````
 
-## license
+## Tests
+
+[![browser support](https://ci.testling.com/dhritzkiv/ampersand-array-input-view.png)](https://ci.testling.com/dhritzkiv/ampersand-array-input-view)
+
+Run tests with `npm test`
+
+## License
 
 MIT
