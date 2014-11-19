@@ -97,7 +97,9 @@ module.exports = View.extend({
 		this.files.on('add remove', function() {
 			self.getValue();
 			self.checkValid();
-			self.parent.update(self);
+			if (self.parent) {
+				self.parent.update(self);
+			}
 		});
 
 		window.files = this.files;
