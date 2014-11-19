@@ -22,20 +22,22 @@
     "url": "git://github.com/dhritzkiv/ampersand-file-drop-view"
   },
   "dependencies": {
+    "ampersand-collection": "^1.3.17",
+    "ampersand-state": "^4.4.0",
     "ampersand-view": "^7.1.6"
   },
   "devDependencies": {
-	  "ampersand-form-view": "^2.0.0",
-	    "beefy": "^2.0.2",
-	    "browserify": "^5.10.1",
-	    "function-bind": "^0.1.0",
-	    "jshint": "~2.5.1",
-	    "phantomjs": "^1.9.7-15",
-	    "precommit-hook": "~1.0.2",
-	    "run-browser": "^1.3.1",
-	    "tap-spec": "^0.2.0",
-	    "tape": "^2.13.3",
-	    "tape-run": "^0.1.1"
+    "ampersand-form-view": "^2.0.0",
+    "beefy": "^2.0.2",
+    "browserify": "^5.10.1",
+    "function-bind": "^0.1.0",
+    "jshint": "~2.5.1",
+    "phantomjs": "^1.9.7-15",
+    "precommit-hook": "~1.0.2",
+    "run-browser": "^1.3.1",
+    "tap-spec": "^0.2.0",
+    "tape": "^2.13.3",
+    "tape-run": "^0.1.1"
   },
   "scripts": {
     "validate": "jshint .",
