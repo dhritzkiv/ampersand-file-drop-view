@@ -178,7 +178,15 @@ module.exports = View.extend({
 		acceptArray: {
 			deps: ['accept'],
 			fn: function() {
-				return this.accept.split(',');
+				var accept;
+				if (typeof this.accept === 'string') {
+					accept = this.accept;
+				} else if (this.accept === true) {
+					accept = '*/*';
+				} else {
+					accept = '';
+				}
+				return accept.split(',');
 			}
 		}
 	},
@@ -228,15 +236,18 @@ module.exports = View.extend({
 	},
 	handleFiles: function(files) {
 
-		var MIMEtypes = this.acceptArray.map(function(accept) {
-			return new RegExp(accept.replace('*', '[^\\/,]+'));
-		});
-
-		files = files.filter(function(file) {
-			return MIMEtypes.some(function(mime) {
-				return mime.test(file.type);
+		if (this.acceptArray.length) {
+			var MIMEtypes = this.acceptArray.map(function(accept) {
+				return new RegExp(accept.replace('*', '[^\\/,]+'));
 			});
-		});
+
+			files = files.filter(function(file) {
+				return MIMEtypes.some(function(mime) {
+					return mime.test(file.type || 'application/octet-stream');
+				});
+			});
+		}
+
 
 		if (!this.multiple) {
 
