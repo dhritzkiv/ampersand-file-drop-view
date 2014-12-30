@@ -96,7 +96,7 @@ module.exports = View.extend({
 
 		this.files.on('add remove', function() {
 			self.getValue();
-			self.checkValid();
+			//self.valid;
 			if (self.parent) {
 				self.parent.update(self);
 			}
@@ -155,10 +155,6 @@ module.exports = View.extend({
 		},
 		required: {
 			type: 'boolean',
-			default: false
-		},
-		valid: {
-			type: 'boolean',
 			default: true
 		},
 		multiple: {
@@ -172,6 +168,12 @@ module.exports = View.extend({
 		accept: {
 			type: 'string',
 			default: '*/*'
+		},
+		tests: {
+			type: 'array',
+			default: function() {
+				return [];
+			}
 		}
 	},
 	derived: {
@@ -188,6 +190,29 @@ module.exports = View.extend({
 				}
 				return accept.split(',');
 			}
+		},
+		valid: {
+			deps: ['value', 'required'],
+			fn: function() {
+
+				var filesLength = this.files.length;
+
+				if (this.required && !filesLength) {
+					return false;
+				}
+
+				if (!this.multiple && filesLength > 1) {
+					return false;
+				}
+
+				if (!this.tests.every(function(test) {
+					return test(this.value);
+				})) {
+					return false;
+				}
+
+				return true;
+			}
 		}
 	},
 	collections: {
@@ -200,20 +225,6 @@ module.exports = View.extend({
 
 		this.value = value;
 		return this.value;
-	},
-	checkValid: function() {
-
-		if (this.required && !this.files.length) {
-			this.valid = false;
-			return;
-		}
-
-		if (this.multiple && this.files.length > 1) {
-			this.valid = false;
-			return;
-		}
-
-		this.valid = true;
 	},
 	render: function() {
 		var self = this;
