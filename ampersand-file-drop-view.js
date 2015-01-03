@@ -1,40 +1,31 @@
-var View = require('ampersand-view');
-var State = require('ampersand-state');
-var Collection = require('ampersand-collection');
+var View = require("ampersand-view");
+var State = require("ampersand-state");
+var Collection = require("ampersand-collection");
 
-var template = ['<div data-hook=\'drop-zone\'>',
-	'<input type=\'file\' style=\'visibility:hidden;width:0;height:0;\'/>',
-	'<span data-hook=\'label\'></span>',
-	'<div data-hook=\'files\'></div>',
-'</div>'].join('');
+var template = ["<div data-hook=\"drop-zone\">",
+	"<input type=\"file\" style=\"visibility:hidden;width:0;height:0;\"/>",
+	"<span data-hook=\"label\"></span>",
+	"<div data-hook=\"files\"></div>",
+"</div>"].join("");
 
-var fileTemplate = ['<article>',
-	'<img width=\'120px\'/>',
-	'<span data-hook=\'name\'></span>',
-	'<span data-hook=\'type\'></span>',
-	'<span data-hook=\'size\'></span>',
-	'<button data-hook=\'remove\'>Remove</button>',
-'</article>'].join('');
+var fileTemplate = ["<article>",
+	"<img width=\"120px\"/>",
+	"<span data-hook=\"name\"></span>",
+	"<span data-hook=\"type\"></span>",
+	"<span data-hook=\"size\"></span><span data-hook\"size-unit\"></span>",
+	"<button data-hook=\"remove\">Remove</button>",
+"</article>"].join("");
 
 var FileState = State.extend({
 	initialize: function(file){
-		var self = this;
-		this.file = file;
-
-		if (/image/.test(file.type)) {
-			var reader = new FileReader();
-			reader.onloadend = function() {
-				self.preview = reader.result;
-			};
-			reader.readAsDataURL(file);
-		}
+		this.set("file", file);
 	},
 	props: {
-		size: 'number',
-		name: 'text',
-		type: 'text',
-		file: 'any',
-		preview: 'string'
+		size: "number",
+		name: "text",
+		type: "text",
+		file: "any",
+		preview: "string"
 	}
 });
 
@@ -49,33 +40,84 @@ var FilesCollection = Collection.extend({
 
 var FileView = View.extend({
 	template: fileTemplate,
+	initialize: function(opts) {
+		var self = this;
+		self.displayPreview = opts.displayPreview;
+		self.fileSizeUnits = opts.fileSizeUnits;
+		var file = self.model.file;
+
+		if (this.displayPreview && /image/.test(file.type)) {
+			var reader = new FileReader();
+			reader.onloadend = function() {
+				self.model.preview = reader.result;
+			};
+			reader.readAsDataURL(file);
+		}
+	},
 	events: {
-		'click [data-hook=remove]': 'removeFile',
+		"click [data-hook=remove]": "removeFile",
 	},
 	bindings: {
-		'model.size': {
-			type: 'text',
-			hook: 'size'
+		"fileSizeUnit": {
+			type: "text",
+			hook: "size-unit"
 		},
-		'model.name': {
-			type: 'text',
-			hook: 'name'
+		"fileSize": {
+			type: "text",
+			hook: "size"
 		},
-		'model.type': {
-			type: 'text',
-			hook: 'type'
+		"model.name": {
+			type: "text",
+			hook: "name"
 		},
-		'model.preview': [
+		"model.type": {
+			type: "text",
+			hook: "type"
+		},
+		"model.preview": [
 			{
-				type: 'toggle',
-				selector: 'img'
+				type: "toggle",
+				selector: "img"
 			},
 			{
-				type: 'attribute',
-				selector: 'img',
-				name: 'src'
+				type: "attribute",
+				selector: "img",
+				name: "src"
 			}
 		]
+	},
+	props: {
+		displayPreview: {
+			type: "boolean"
+		},
+		fileSizeUnits: {
+			type: "string"
+		}
+	},
+	derived: {
+		fileSize: {
+			deps: ["model.size", "fileSizeUnits"],
+			fn: function() {
+				var number = this.model.size;
+				var exp = 0;
+
+				switch(this.fileSizeUnits) {
+					case "KB":
+						exp = 10;
+						break;
+					case "MB":
+						exp = 20;
+						break;
+					case "GB":
+						exp = 30;
+						break;
+					default:
+						exp = 0;
+				}
+
+				return number / Math.pow(2,exp);
+			}
+		}
 	},
 	removeFile: function(event) {
 		event.preventDefault();
@@ -94,105 +136,111 @@ module.exports = View.extend({
 	initialize: function() {
 		var self = this;
 
-		this.files.on('add remove', function() {
+		this.files.on("add remove", function() {
 			self.getValue();
 			//self.valid;
 			if (self.parent) {
 				self.parent.update(self);
 			}
 		});
-
-		window.files = this.files;
 	},
 	events: {
-		'click [data-hook=drop-zone]': 'simulateInputClick',
-		'change input[type=file]': 'handleFileInput',
-		'dragenter [data-hook=drop-zone]': 'dragEnter',
-		'dragover [data-hook=drop-zone]': 'dragOver',
-		'drop [data-hook=drop-zone]': 'drop'
+		"click [data-hook=drop-zone]": "simulateInputClick",
+		"change input[type=file]": "handleFileInput",
+		"dragenter [data-hook=drop-zone]": "dragEnter",
+		"dragover [data-hook=drop-zone]": "dragOver",
+		"drop [data-hook=drop-zone]": "drop"
 	},
 	bindings: {
 		name: {
-			type: 'attribute',
-			selector: 'input[type=file]',
-			name: 'name'
+			type: "attribute",
+			selector: "input[type=file]",
+			name: "name"
 		},
 		label: [
 			{
-				type: 'toggle',
-				hook: 'label'
+				type: "toggle",
+				hook: "label"
 			},
 			{
-				type: 'text',
-				hook: 'label'
+				type: "text",
+				hook: "label"
 			}
 		],
 		holderClass: {
-			type: 'class',
-			hook: 'drop-zone'
+			type: "class",
+			hook: "drop-zone"
 		},
 		multiple: {
-			type: 'booleanAttribute',
-			selector: 'input[type=file]',
-			name: 'multiple'
+			type: "booleanAttribute",
+			selector: "input[type=file]",
+			name: "multiple"
 		},
 		accept: {
-			type: 'attribute',
-			selector: 'input[type=file]',
-			name: 'accept'
+			type: "attribute",
+			selector: "input[type=file]",
+			name: "accept"
 		}
 	},
 	props: {
 		holderClass: {
-			type: 'string'
+			type: "string"
 		},
 		label: {
-			type: 'string',
-			default: 'Drag and drop a file'
+			type: "string",
+			default: "Drag and drop a file"
 		},
 		value: {
-			type: 'any'
+			type: "any"
 		},
 		required: {
-			type: 'boolean',
+			type: "boolean",
 			default: true
 		},
 		multiple: {
-			type: 'boolean',
+			type: "boolean",
 			default: false
 		},
 		name: {
-			type: 'string',
+			type: "string",
 			required: true
 		},
 		accept: {
-			type: 'string',
-			default: '*/*'
+			type: "string",
+			default: "*/*"
 		},
 		tests: {
-			type: 'array',
+			type: "array",
 			default: function() {
 				return [];
 			}
+		},
+		fileSizeUnit: {
+			type: "string",
+			default: "KB"
+		},
+		displayPreview: {
+			type: "boolean",
+			default: true
 		}
 	},
 	derived: {
 		acceptArray: {
-			deps: ['accept'],
+			deps: ["accept"],
 			fn: function() {
 				var accept;
-				if (typeof this.accept === 'string') {
+				if (typeof this.accept === "string") {
 					accept = this.accept;
 				} else if (this.accept === true) {
-					accept = '*/*';
+					accept = "*/*";
 				} else {
-					accept = '';
+					accept = "";
 				}
-				return accept.split(',');
+				return accept.split(",");
 			}
 		},
 		valid: {
-			deps: ['value', 'required'],
+			deps: ["value", "required"],
 			fn: function() {
 
 				var filesLength = this.files.length;
@@ -230,8 +278,13 @@ module.exports = View.extend({
 		var self = this;
 
 		this.renderWithTemplate(this);
-		this.input = this.query('input[type=file]');
-		this.renderCollection(self.files, FileView, self.queryByHook('files'));
+		this.input = this.query("input[type=file]");
+		this.renderCollection(self.files, FileView, self.queryByHook("files"), {
+			viewOptions: {
+				fileUnitSize: self.fileUnitSize,
+				displayPreview: self.displayPreview
+			}
+		});
 	},
 	reset: function() {
 		var self = this;
@@ -249,12 +302,12 @@ module.exports = View.extend({
 
 		if (this.acceptArray.length) {
 			var MIMEtypes = this.acceptArray.map(function(accept) {
-				return new RegExp(accept.replace('*', '[^\\/,]+'));
+				return new RegExp(accept.replace("*", "[^\\/,]+"));
 			});
 
 			files = files.filter(function(file) {
 				return MIMEtypes.some(function(mime) {
-					return mime.test(file.type || 'application/octet-stream');
+					return mime.test(file.type || "application/octet-stream");
 				});
 			});
 		}
@@ -263,7 +316,7 @@ module.exports = View.extend({
 		if (!this.multiple) {
 
 			if (this.files.length && files.length) {
-				throw new Error('Multiple files are not allowed');
+				throw new Error("Multiple files are not allowed");
 			}
 
 			files = files.splice(0, 1);
