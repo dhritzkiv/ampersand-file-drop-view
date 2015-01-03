@@ -12,7 +12,7 @@ var fileTemplate = ["<article>",
 	"<img width=\"120px\"/>",
 	"<span data-hook=\"name\"></span>",
 	"<span data-hook=\"type\"></span>",
-	"<span data-hook=\"size\"></span><span data-hook\"size-unit\"></span>",
+	"<div><span data-hook=\"size\"></span><span data-hook=\"size-unit\"></span></div>",
 	"<button data-hook=\"remove\">Remove</button>",
 "</article>"].join("");
 
@@ -43,7 +43,7 @@ var FileView = View.extend({
 	initialize: function(opts) {
 		var self = this;
 		self.displayPreview = opts.displayPreview;
-		self.fileSizeUnits = opts.fileSizeUnits;
+		self.fileSizeUnit = opts.fileSizeUnit;
 		var file = self.model.file;
 
 		if (this.displayPreview && /image/.test(file.type)) {
@@ -90,24 +90,28 @@ var FileView = View.extend({
 		displayPreview: {
 			type: "boolean"
 		},
-		fileSizeUnits: {
-			type: "string"
+		fileSizeUnit: {
+			type: "string",
+			default: "B"
 		}
 	},
 	derived: {
 		fileSize: {
-			deps: ["model.size", "fileSizeUnits"],
+			deps: ["model.size", "fileSizeUnit"],
 			fn: function() {
 				var number = this.model.size;
 				var exp = 0;
 
-				switch(this.fileSizeUnits) {
+				switch(this.fileSizeUnit.toUpperCase()) {
+					case "KILOBYTE":
 					case "KB":
 						exp = 10;
 						break;
+					case "MEGABYTE":
 					case "MB":
 						exp = 20;
 						break;
+					case "GIGABYTE":
 					case "GB":
 						exp = 30;
 						break;
@@ -219,7 +223,7 @@ module.exports = View.extend({
 			type: "string",
 			default: "KB"
 		},
-		displayPreview: {
+		displayPreviews: {
 			type: "boolean",
 			default: true
 		}
@@ -282,7 +286,7 @@ module.exports = View.extend({
 		this.renderCollection(self.files, FileView, self.queryByHook("files"), {
 			viewOptions: {
 				fileUnitSize: self.fileUnitSize,
-				displayPreview: self.displayPreview
+				displayPreview: self.displayPreviews
 			}
 		});
 	},
