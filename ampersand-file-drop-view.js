@@ -91,8 +91,7 @@ var FileView = View.extend({
 			type: "boolean"
 		},
 		fileSizeUnit: {
-			type: "string",
-			default: "B"
+			type: "string"
 		}
 	},
 	derived: {
@@ -119,7 +118,7 @@ var FileView = View.extend({
 						exp = 0;
 				}
 
-				return number / Math.pow(2,exp);
+				return (number / Math.pow(2,exp)).toFixed(2);
 			}
 		}
 	},
@@ -285,7 +284,7 @@ module.exports = View.extend({
 		this.input = this.query("input[type=file]");
 		this.renderCollection(self.files, FileView, self.queryByHook("files"), {
 			viewOptions: {
-				fileUnitSize: self.fileUnitSize,
+				fileSizeUnit: self.fileSizeUnit,
 				displayPreview: self.displayPreviews
 			}
 		});
