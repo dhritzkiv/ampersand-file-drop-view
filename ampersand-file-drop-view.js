@@ -194,7 +194,10 @@ module.exports = View.extend({
 			default: "Drag and drop a file"
 		},
 		value: {
-			type: "any"
+			type: "array",
+			default: function() {
+				return [];
+			}
 		},
 		required: {
 			type: "boolean",
@@ -270,11 +273,7 @@ module.exports = View.extend({
 		files: FilesCollection
 	},
 	getValue: function() {
-		var value;
-
-		value = this.files.toFiles();
-
-		this.value = value;
+		this.value = this.files.toFiles();
 		return this.value;
 	},
 	render: function() {
@@ -293,6 +292,7 @@ module.exports = View.extend({
 		var self = this;
 		setTimeout(function() {
 			self.files.reset();
+			self.getValue();
 		}, 0);
 	},
 	clear: function() {
