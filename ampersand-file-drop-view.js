@@ -45,9 +45,9 @@ var fileViewProps = {
 		type: "string",
 		default: "KB"
 	},
-	displayPreviews: {
+	displayPreview: {
 		type: "boolean",
-		default: true
+		default: false
 	}
 };
 

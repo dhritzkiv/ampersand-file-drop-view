@@ -41,10 +41,11 @@ new FormView({
 - `holderClass` _String._ Class to use for the main container.
 - `holderHoverClass` _String._ Class to use for the main container when hovering with a selection over the main container.
 - `documentHoverClass` _String._ Class to use for the main container when hovering with a selection over the document body element.
-- `itemViewOptions` _Object._ Options object to pass to individual item views.
+- `itemViewOptions` _Object._ Options object to pass to individual item views (see below)
 
-## Item View Constructor Options
-- `displayPreview` _Boolean._ Whether or not to display an image preview, if available
+## Item View Constructor Options (`itemViewOptions`)
+
+- `displayPreview` _Boolean._ Whether or not to display an image preview, if available. Defaults to `false`
 - `fileSizeUnit` _String._  Which file size unit to use. E.g.: "kb", "mb", "gb", etc.
 
 ## Tests
