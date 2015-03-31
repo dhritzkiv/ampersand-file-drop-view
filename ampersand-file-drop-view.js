@@ -205,7 +205,7 @@ module.exports = View.extend({
 			selector: "input[type=file]",
 			name: "multiple"
 		},
-		accept: {
+		_accept: {
 			type: "attribute",
 			selector: "input[type=file]",
 			name: "accept"
@@ -236,7 +236,7 @@ module.exports = View.extend({
 		},
 		required: {
 			type: "boolean",
-			default: true
+			default: false
 		},
 		multiple: {
 			type: "boolean",
@@ -247,8 +247,9 @@ module.exports = View.extend({
 			required: true
 		},
 		accept: {
-			type: "string",
-			default: "*/*"
+			type: "any",
+			default: "*/*",
+			required: true
 		},
 		tests: {
 			type: "array",
@@ -261,18 +262,27 @@ module.exports = View.extend({
 		itemViewOptions: fileViewPropsState	
 	},
 	derived: {
-		_acceptArray: {
+		_accept: {
 			deps: ["accept"],
 			fn: function() {
-				var accept;
+				
 				if (typeof this.accept === "string") {
-					accept = this.accept;
+					return this.accept;
+				} else if (Array.isArray(this.accept)) {
+					return this.accept.join(",");
 				} else if (this.accept === true) {
-					accept = "*/*";
-				} else {
-					accept = "";
+					return "*/*";
 				}
-				return accept.split(",");
+				
+				return "";
+			}
+		},
+		_acceptArray: {
+			deps: ["_accept"],
+			fn: function() {
+				return this._accept.split(",").filter(function(i) {
+					return i;
+				});
 			}
 		},
 		valid: {
@@ -356,7 +366,6 @@ module.exports = View.extend({
 				});
 			});
 		}
-
 
 		if (!this.multiple) {
 

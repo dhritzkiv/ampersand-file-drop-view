@@ -36,7 +36,7 @@ new FormView({
 - `label` _String._ Label to use for the view. Defaults to `"Drag and drop a file"`. Can be falsy to hide label.
 - `required` _Boolean._ Whether or not this view needs to have files. Defaults to `false`
 - `multiple` _Boolean._ Whether to allow one or multiple files. Defaults to `false`
-- `accept` _String._ Which mime types to allow. Comma separated. Defaults to `"*/*"`
+- `accept` _String/Array._ Which mime types to allow. Comma separated if string. Defaults to `"*/*"`
 - `holderClass` _String._ Class to use for the main container.
 - `holderHoverClass` _String._ Class to use for the main container when hovering with a selection over the main container.
 - `documentHoverClass` _String._ Class to use for the main container when hovering with a selection over the document body element.
