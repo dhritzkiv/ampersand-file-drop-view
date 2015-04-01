@@ -18,12 +18,42 @@ test('basic init', function (t) {
 	t.equal(input._acceptArray.join(), ['*/*'].join());
 	t.equal(input.el.tagName, 'DIV');
 	t.ok(input.el.querySelector('[data-hook=label]'));
+	t.ok(input.el.querySelector('[data-hook=label]').textContent, 'Drag and drop a file');
 	t.ok(input.el.querySelector('input'));
 	t.equal(input.el.querySelector('input').type, 'file');
 	t.equal(input.el.querySelector('input').name, 'file');
 	t.equal(input.el.querySelector('input').getAttribute('style'), 'visibility:hidden;width:0;height:0;');
 	t.equal(input.el.querySelector('[data-hook=label]').textContent, 'Drag and drop a file');
 	t.equal(input.el.querySelector('input').getAttribute('multiple'), null);
+	t.end();
+});
+
+test('label property and element', function(t) {
+	var input = new FileDropView({
+		label: 'Feed me files'
+	});
+	input.render();
+
+	var labelEl = input.el.querySelector('[data-hook=label]');
+	t.equal(input.label, 'Feed me files');
+	t.ok(labelEl);
+	t.equal(labelEl.textContent, 'Feed me files');
+	t.end();
+});
+
+test('label property and element when passed false', function(t) {
+	var input = new FileDropView({
+		label: ''
+	});
+	input.render();
+
+	var labelEl = input.el.querySelector('[data-hook=label]');
+	t.equal(input.label, '');
+	t.ok(labelEl);
+	t.equal(labelEl.textContent, '');
+	t.equal(labelEl.getAttribute('data-anddom-display'), '');
+	t.equal(labelEl.getAttribute('data-anddom-hidden'), 'true');
+	t.equal(labelEl.style.display, 'none');
 	t.end();
 });
 
