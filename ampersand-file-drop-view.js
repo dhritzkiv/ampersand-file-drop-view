@@ -134,6 +134,10 @@ function eventNoOp(event) {
 	event.preventDefault();
 }
 
+function arrayDefault() {
+	return [];
+}
+
 module.exports = View.extend({
 	template: template,
 	initialize: function() {
@@ -141,7 +145,6 @@ module.exports = View.extend({
 
 		this.files.on("add remove", function() {
 			self.getValue();
-			//self.valid;
 			if (self.parent) {
 				self.parent.update(self);
 			}
@@ -195,9 +198,7 @@ module.exports = View.extend({
 		},
 		value: {
 			type: "array",
-			default: function() {
-				return [];
-			}
+			default: arrayDefault
 		},
 		required: {
 			type: "boolean",
@@ -217,9 +218,7 @@ module.exports = View.extend({
 		},
 		tests: {
 			type: "array",
-			default: function() {
-				return [];
-			}
+			default: arrayDefault
 		},
 		fileSizeUnit: {
 			type: "string",
@@ -333,9 +332,7 @@ module.exports = View.extend({
 	dragEnter: eventNoOp,
 	dragOver: eventNoOp,
 	drop: function(event) {
-		event.stopPropagation();
-		event.preventDefault();
-
+		eventNoOp(event);
 		this.handleFiles(Array.prototype.slice.apply(event.dataTransfer.files));
 	}
 });
