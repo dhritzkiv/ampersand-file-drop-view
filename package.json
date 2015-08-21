@@ -1,7 +1,7 @@
 {
   "name": "ampersand-file-drop-view",
   "description": "Drag-and-drop file view based on ampersand-view, and for use in ampersand-form-view",
-  "version": "0.0.6",
+  "version": "0.1.2",
   "author": "Daniel Hritzkiv <daniel.hritzkiv@gmail.com>",
   "bugs": {
     "url": "https://github.com/dhritzkiv/ampersand-file-drop-view/issues"
@@ -13,7 +13,8 @@
     "view",
     "drag",
     "drop",
-    "input"
+    "input",
+    "dnd"
   ],
   "license": "MIT",
   "main": "ampersand-file-drop-view.js",
@@ -45,22 +46,6 @@
     "test": "browserify test/index.js | tape-run -b phantom | tap-spec",
     "demo": "beefy demo.js",
     "lint": "jshint ."
-  },
-  "testling": {
-    "files": "test/*.js",
-    "browsers": [
-      "ie/9..latest",
-      "firefox/17..latest",
-      "firefox/nightly",
-      "chrome/22..latest",
-      "chrome/canary",
-      "opera/12..latest",
-      "opera/next",
-      "safari/5.1..latest",
-      "ipad/6.0..latest",
-      "iphone/6.0..latest",
-      "android-browser/4.2..latest"
-    ]
   },
   "pre-commit": [
     "lint",

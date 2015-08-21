@@ -1,3 +1,5 @@
+/*jslint browser: true */
+
 var View = require("ampersand-view");
 var State = require("ampersand-state");
 var Collection = require("ampersand-collection");
@@ -38,12 +40,30 @@ var FilesCollection = Collection.extend({
 	}
 });
 
+var fileViewProps = {
+	fileSizeUnit: {
+		type: "string",
+		default: "KB"
+	},
+	displayPreview: {
+		type: "boolean",
+		default: false
+	}
+};
+
+var fileViewPropsState = State.extend({
+	props: fileViewProps
+});
+
 var FileView = View.extend({
 	template: fileTemplate,
 	initialize: function(opts) {
 		var self = this;
-		self.displayPreview = opts.displayPreview;
-		self.fileSizeUnit = opts.fileSizeUnit;
+		
+		for (var key in opts) {
+			self[key] = opts[key];
+		}
+		
 		var file = self.model.file;
 
 		if (this.displayPreview && /image/.test(file.type)) {
@@ -86,14 +106,7 @@ var FileView = View.extend({
 			}
 		]
 	},
-	props: {
-		displayPreview: {
-			type: "boolean"
-		},
-		fileSizeUnit: {
-			type: "string"
-		}
-	},
+	props: fileViewProps,
 	derived: {
 		fileSize: {
 			deps: ["model.size", "fileSizeUnit"],
@@ -129,13 +142,25 @@ var FileView = View.extend({
 	}
 });
 
-function eventNoOp(event) {
+function arrayDefault() {
+	return [];
+}
+
+function documentDragOver(event) {
 	event.stopPropagation();
 	event.preventDefault();
 }
 
-function arrayDefault() {
-	return [];
+function documentDragStart(event) {
+	event.stopPropagation();
+	event.preventDefault();
+	this.el.classList.add(this.documentHoverClass);
+}
+
+function documentDragEnd(event) {
+	event.stopPropagation();
+	event.preventDefault();
+	this.el.classList.remove(this.documentHoverClass);
 }
 
 module.exports = View.extend({
@@ -153,8 +178,9 @@ module.exports = View.extend({
 	events: {
 		"click [data-hook=drop-zone]": "simulateInputClick",
 		"change input[type=file]": "handleFileInput",
-		"dragenter [data-hook=drop-zone]": "dragEnter",
 		"dragover [data-hook=drop-zone]": "dragOver",
+		"dragenter [data-hook=drop-zone]": "dragEnter",
+		"dragleave [data-hook=drop-zone]": "dragLeave",
 		"drop [data-hook=drop-zone]": "drop"
 	},
 	bindings: {
@@ -182,7 +208,7 @@ module.exports = View.extend({
 			selector: "input[type=file]",
 			name: "multiple"
 		},
-		accept: {
+		_accept: {
 			type: "attribute",
 			selector: "input[type=file]",
 			name: "accept"
@@ -190,7 +216,16 @@ module.exports = View.extend({
 	},
 	props: {
 		holderClass: {
-			type: "string"
+			type: "string",
+			default: "file-holder"
+		},
+		holderHoverClass: {
+			type: "string",
+			default: "file-holder-hover"
+		},
+		documentHoverClass: {
+			type: "string",
+			default: "document-hover"
 		},
 		label: {
 			type: "string",
@@ -202,7 +237,7 @@ module.exports = View.extend({
 		},
 		required: {
 			type: "boolean",
-			default: true
+			default: false
 		},
 		multiple: {
 			type: "boolean",
@@ -213,35 +248,39 @@ module.exports = View.extend({
 			required: true
 		},
 		accept: {
-			type: "string",
-			default: "*/*"
+			type: "any",
+			default: "*/*",
+			required: true
 		},
 		tests: {
 			type: "array",
 			default: arrayDefault
-		},
-		fileSizeUnit: {
-			type: "string",
-			default: "KB"
-		},
-		displayPreviews: {
-			type: "boolean",
-			default: true
 		}
+	children: {
+		itemViewOptions: fileViewPropsState	
 	},
 	derived: {
-		acceptArray: {
+		_accept: {
 			deps: ["accept"],
 			fn: function() {
-				var accept;
+				
 				if (typeof this.accept === "string") {
-					accept = this.accept;
+					return this.accept;
+				} else if (Array.isArray(this.accept)) {
+					return this.accept.join(",");
 				} else if (this.accept === true) {
-					accept = "*/*";
-				} else {
-					accept = "";
+					return "*/*";
 				}
-				return accept.split(",");
+				
+				return "";
+			}
+		},
+		_acceptArray: {
+			deps: ["_accept"],
+			fn: function() {
+				return this._accept.split(",").filter(function(i) {
+					return i;
+				});
 			}
 		},
 		valid: {
@@ -281,10 +320,22 @@ module.exports = View.extend({
 		this.renderWithTemplate(this);
 		this.input = this.query("input[type=file]");
 		this.renderCollection(self.files, FileView, self.queryByHook("files"), {
-			viewOptions: {
-				fileSizeUnit: self.fileSizeUnit,
-				displayPreview: self.displayPreviews
-			}
+			viewOptions: self.itemViewOptions.toJSON()
+		});
+		
+		var boundDocumentDragStart = documentDragStart.bind(self);
+		var boundDocumentDragEnd = documentDragEnd.bind(self);
+		
+		document.body.addEventListener("dragover", documentDragOver);
+		document.body.addEventListener("dragenter", boundDocumentDragStart);
+		document.body.addEventListener("dragleave", boundDocumentDragEnd);
+		document.body.addEventListener("drop", boundDocumentDragEnd);
+		
+		self.on("remove", function() {
+			document.body.removeEventListener("dragover", documentDragOver);
+			document.body.removeEventListener("dragenter", boundDocumentDragStart);
+			document.body.removeEventListener("dragleave", boundDocumentDragEnd);
+			document.body.removeEventListener("drop", boundDocumentDragEnd);
 		});
 	},
 	reset: function() {
@@ -302,8 +353,8 @@ module.exports = View.extend({
 	},
 	handleFiles: function(files) {
 
-		if (this.acceptArray.length) {
-			var MIMEtypes = this.acceptArray.map(function(accept) {
+		if (this._acceptArray.length) {
+			var MIMEtypes = this._acceptArray.map(function(accept) {
 				return new RegExp(accept.replace("*", "[^\\/,]+"));
 			});
 
@@ -313,7 +364,6 @@ module.exports = View.extend({
 				});
 			});
 		}
-
 
 		if (!this.multiple) {
 
@@ -329,10 +379,33 @@ module.exports = View.extend({
 	handleFileInput: function() {
 		this.handleFiles(Array.prototype.slice.apply(this.input.files));
 	},
-	dragEnter: eventNoOp,
-	dragOver: eventNoOp,
+	dragOver: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		event.dataTransfer.effectAllowed = "copy";
+		event.dataTransfer.dropEffect = "copy";
+	},
+	dragEnter: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.el.classList.add(this.holderHoverClass);
+	},
+	dragLeave: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		
+		var rect = event.delegateTarget.getBoundingClientRect();
+
+       // Check if mouse coordinates are outside the element, 
+       // since hovering over children causes a leave event;
+		if(event.clientX > rect.left + rect.width || event.clientX < rect.left || event.clientY > rect.top + rect.height || event.clientY < rect.top) {
+			this.el.classList.remove(this.holderHoverClass);
+		}
+	},
 	drop: function(event) {
-		eventNoOp(event);
+		event.stopPropagation();
+		event.preventDefault();
+		this.el.classList.remove(this.holderHoverClass);
 		this.handleFiles(Array.prototype.slice.apply(event.dataTransfer.files));
 	}
 });
