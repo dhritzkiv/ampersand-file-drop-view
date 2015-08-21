@@ -27,23 +27,24 @@
     "ampersand-view": "^8.0.1"
   },
   "devDependencies": {
-    "ampersand-form-view": "^2.0.0",
-    "beefy": "^2.0.2",
-    "browserify": "^5.10.1",
-    "function-bind": "^0.1.0",
-    "jshint": "~2.5.1",
-    "phantomjs": "^1.9.7-15",
-    "precommit-hook": "~1.0.2",
-    "run-browser": "^1.3.1",
-    "tap-spec": "^0.2.0",
-    "tape": "^2.13.3",
-    "tape-run": "^0.1.1"
+    "ampersand-form-view": "^5.1.1",
+    "beefy": "^2.1.5",
+    "browserify": "^11.0.1",
+    "function-bind": "^1.0.2",
+    "jshint": "^2.8.0",
+    "phantomjs": "^1.9.18",
+    "precommit-hook": "^3.0.0",
+    "run-browser": "^2.0.2",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0",
+    "tape-run": "^1.1.0"
   },
   "scripts": {
     "validate": "jshint .",
     "start": "run-browser test/index.js",
     "test": "browserify test/index.js | tape-run -b phantom | tap-spec",
-    "demo": "beefy demo.js"
+    "demo": "beefy demo.js",
+    "lint": "jshint ."
   },
   "testling": {
     "files": "test/*.js",
@@ -60,5 +61,10 @@
       "iphone/6.0..latest",
       "android-browser/4.2..latest"
     ]
-  }
+  },
+  "pre-commit": [
+    "lint",
+    "validate",
+    "test"
+  ]
 }
