@@ -59,11 +59,11 @@ var FileView = View.extend({
 	template: fileTemplate,
 	initialize: function(opts) {
 		var self = this;
-		
+
 		for (var key in opts) {
 			self[key] = opts[key];
 		}
-		
+
 		var file = self.model.file;
 
 		if (this.displayPreview && /image/.test(file.type)) {
@@ -142,25 +142,13 @@ var FileView = View.extend({
 	}
 });
 
+function eventNoOp(event) {
+	event.stopPropagation();
+	event.preventDefault();
+}
+
 function arrayDefault() {
 	return [];
-}
-
-function documentDragOver(event) {
-	event.stopPropagation();
-	event.preventDefault();
-}
-
-function documentDragStart(event) {
-	event.stopPropagation();
-	event.preventDefault();
-	this.el.classList.add(this.documentHoverClass);
-}
-
-function documentDragEnd(event) {
-	event.stopPropagation();
-	event.preventDefault();
-	this.el.classList.remove(this.documentHoverClass);
 }
 
 module.exports = View.extend({
@@ -183,37 +171,6 @@ module.exports = View.extend({
 		"dragleave [data-hook=drop-zone]": "dragLeave",
 		"drop [data-hook=drop-zone]": "drop"
 	},
-	bindings: {
-		name: {
-			type: "attribute",
-			selector: "input[type=file]",
-			name: "name"
-		},
-		label: [
-			{
-				type: "toggle",
-				hook: "label"
-			},
-			{
-				type: "text",
-				hook: "label"
-			}
-		],
-		holderClass: {
-			type: "class",
-			hook: "drop-zone"
-		},
-		multiple: {
-			type: "booleanAttribute",
-			selector: "input[type=file]",
-			name: "multiple"
-		},
-		_accept: {
-			type: "attribute",
-			selector: "input[type=file]",
-			name: "accept"
-		}
-	},
 	props: {
 		holderClass: {
 			type: "string",
@@ -223,9 +180,17 @@ module.exports = View.extend({
 			type: "string",
 			default: "file-holder-hover"
 		},
+		holderHovering: {
+			type: "boolean",
+			default: false
+		},
 		documentHoverClass: {
 			type: "string",
 			default: "document-hover"
+		},
+		documentHovering: {
+			type: "boolean",
+			default: false
 		},
 		label: {
 			type: "string",
@@ -256,14 +221,15 @@ module.exports = View.extend({
 			type: "array",
 			default: arrayDefault
 		}
+	},
 	children: {
-		itemViewOptions: fileViewPropsState	
+		itemViewOptions: fileViewPropsState
 	},
 	derived: {
 		_accept: {
 			deps: ["accept"],
 			fn: function() {
-				
+
 				if (typeof this.accept === "string") {
 					return this.accept;
 				} else if (Array.isArray(this.accept)) {
@@ -271,7 +237,7 @@ module.exports = View.extend({
 				} else if (this.accept === true) {
 					return "*/*";
 				}
-				
+
 				return "";
 			}
 		},
@@ -305,6 +271,65 @@ module.exports = View.extend({
 
 				return true;
 			}
+		},
+		holderHoveringClassToShow: {
+			deps: ["holderHoverClass", "holderHovering"],
+			fn: function () {
+				if (!this.holderHovering) {
+					return "";
+				}
+
+				return this.holderHoverClass;
+			}
+		},
+		documentHoveringClassToShow: {
+			deps: ["documentHoverClass", "documentHovering"],
+			fn: function () {
+				if (!this.documentHovering) {
+					return "";
+				}
+
+				return this.documentHoverClass;
+			}
+		}
+	},
+	bindings: {
+		name: {
+			type: "attribute",
+			selector: "input[type=file]",
+			name: "name"
+		},
+		label: [
+			{
+				type: "toggle",
+				hook: "label"
+			},
+			{
+				type: "text",
+				hook: "label"
+			}
+		],
+		holderClass: {
+			type: "class",
+			hook: "drop-zone"
+		},
+		holderHoveringClassToShow: {
+			type: "booleanClass",
+			hook: "drop-zone"
+		},
+		documentHoveringClassToShow: {
+			type: "booleanClass",
+			hook: "drop-zone"
+		},
+		multiple: {
+			type: "booleanAttribute",
+			selector: "input[type=file]",
+			name: "multiple"
+		},
+		_accept: {
+			type: "attribute",
+			selector: "input[type=file]",
+			name: "accept"
 		}
 	},
 	collections: {
@@ -322,17 +347,17 @@ module.exports = View.extend({
 		this.renderCollection(self.files, FileView, self.queryByHook("files"), {
 			viewOptions: self.itemViewOptions.toJSON()
 		});
-		
-		var boundDocumentDragStart = documentDragStart.bind(self);
-		var boundDocumentDragEnd = documentDragEnd.bind(self);
-		
-		document.body.addEventListener("dragover", documentDragOver);
+
+		var boundDocumentDragStart = self.documentDragStart.bind(self);
+		var boundDocumentDragEnd = self.documentDragEnd.bind(self);
+
+		document.body.addEventListener("dragover", eventNoOp);
 		document.body.addEventListener("dragenter", boundDocumentDragStart);
 		document.body.addEventListener("dragleave", boundDocumentDragEnd);
 		document.body.addEventListener("drop", boundDocumentDragEnd);
-		
+
 		self.on("remove", function() {
-			document.body.removeEventListener("dragover", documentDragOver);
+			document.body.removeEventListener("dragover", eventNoOp);
 			document.body.removeEventListener("dragenter", boundDocumentDragStart);
 			document.body.removeEventListener("dragleave", boundDocumentDragEnd);
 			document.body.removeEventListener("drop", boundDocumentDragEnd);
@@ -388,24 +413,34 @@ module.exports = View.extend({
 	dragEnter: function(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		this.el.classList.add(this.holderHoverClass);
+		this.holderHovering = true;
 	},
 	dragLeave: function(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		
+
 		var rect = event.delegateTarget.getBoundingClientRect();
 
-       // Check if mouse coordinates are outside the element, 
+       // Check if mouse coordinates are outside the element,
        // since hovering over children causes a leave event;
 		if(event.clientX > rect.left + rect.width || event.clientX < rect.left || event.clientY > rect.top + rect.height || event.clientY < rect.top) {
-			this.el.classList.remove(this.holderHoverClass);
+			this.holderHovering = false;
 		}
 	},
 	drop: function(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		this.el.classList.remove(this.holderHoverClass);
+		this.holderHovering = false;
 		this.handleFiles(Array.prototype.slice.apply(event.dataTransfer.files));
+	},
+	documentDragStart: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.documentHovering = true;
+	},
+	documentDragEnd: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.documentHovering = false;
 	}
 });
