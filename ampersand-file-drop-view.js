@@ -111,7 +111,7 @@ var FileView = View.extend({
 		fileSize: {
 			deps: ["model.size", "fileSizeUnit"],
 			fn: function() {
-				var number = this.model.size;
+				var size = this.model.size;
 				var exp = 0;
 
 				switch(this.fileSizeUnit.toUpperCase()) {
@@ -131,7 +131,7 @@ var FileView = View.extend({
 						exp = 0;
 				}
 
-				return (number / Math.pow(2,exp)).toFixed(2);
+				return (size / Math.pow(2, exp)).toFixed(2);
 			}
 		}
 	},
@@ -313,12 +313,12 @@ module.exports = View.extend({
 			type: "class",
 			hook: "drop-zone"
 		},
-		holderHoveringClassToShow: {
-			type: "booleanClass",
+		holderHoveringClass: {
+			type: "class",
 			hook: "drop-zone"
 		},
 		documentHoveringClassToShow: {
-			type: "booleanClass",
+			type: "class",
 			hook: "drop-zone"
 		},
 		multiple: {
@@ -362,6 +362,8 @@ module.exports = View.extend({
 			document.body.removeEventListener("dragleave", boundDocumentDragEnd);
 			document.body.removeEventListener("drop", boundDocumentDragEnd);
 		});
+
+		return this;
 	},
 	reset: function() {
 		var self = this;
