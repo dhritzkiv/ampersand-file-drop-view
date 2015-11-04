@@ -24,8 +24,8 @@ var FileState = State.extend({
 	},
 	props: {
 		size: "number",
-		name: "text",
-		type: "text",
+		name: "string",
+		type: "string",
 		file: "any",
 		preview: "string"
 	}
