@@ -1,10 +1,15 @@
-//I currently know no way of testing file events, so the tests are very basic, and don't cover the more complex logic in dealing with files. If there 
+//I currently know no way of testing file events, so the tests are very basic, and don't cover the more complex logic in dealing with files. If there
 
 var test = require('tape');
+//var viewCompliance = require('ampersand-view-conventions');
 var FileDropView = require('../ampersand-file-drop-view');
 
 //PhantomJS < v2 doesn't have `bind`
 Function.prototype.bind = require('function-bind');
+
+//viewCompliance.formField(test, FileDropView, {name: 'file'});
+
+//viewCompliance.view(test, FileDropView, {name: 'file'});
 
 test('basic init', function (t) {
 	var input = new FileDropView({
