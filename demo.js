@@ -20,6 +20,8 @@ var formView = new FormView({
 	}
 });
 
+formView.render();
+
 window.formView = formView;
 
 document.body.appendChild(formView.el);
