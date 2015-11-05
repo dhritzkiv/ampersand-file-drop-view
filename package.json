@@ -46,11 +46,13 @@
     "start": "run-browser test/index.js",
     "test": "browserify test/index.js | tape-run -b phantom | tap-spec",
     "demo": "beefy demo.js",
-    "lint": "jshint ."
+    "lint": "jshint .",
+    "checkstyle": "jscs ."
   },
   "pre-commit": [
     "lint",
     "validate",
+    "checkstyle",
     "test"
   ]
 }

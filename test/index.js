@@ -1,5 +1,4 @@
-//I currently know no way of testing file events, so the tests are very basic, and don't cover the more complex logic in dealing with files. If there 
-
+//I currently know no way of testing file events, so the tests are very basic, and don't cover the more complex logic in dealing with files.
 var test = require('tape');
 var FileDropView = require('../ampersand-file-drop-view');
 

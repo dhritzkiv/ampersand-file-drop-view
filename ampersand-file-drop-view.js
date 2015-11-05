@@ -20,7 +20,7 @@ var fileTemplate = ["<article>",
 "</article>"].join("");
 
 var FileState = State.extend({
-	initialize: function(file){
+	initialize: function(file) {
 		this.set("file", file);
 	},
 	props: {
@@ -73,7 +73,7 @@ var FileView = View.extend({
 		}
 	},
 	events: {
-		"click [data-hook=remove]": "removeFile",
+		"click [data-hook=remove]": "removeFile"
 	},
 	bindings: {
 		"fileSizeUnit": {
@@ -112,7 +112,7 @@ var FileView = View.extend({
 				var size = this.model.size;
 				var exp = 0;
 
-				switch(this.fileSizeUnit.toUpperCase()) {
+				switch (this.fileSizeUnit.toUpperCase()) {
 					case "KILOBYTE":
 					case "KB":
 						exp = 10;
