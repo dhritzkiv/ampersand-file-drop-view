@@ -157,7 +157,7 @@ module.exports = View.extend({
 			if (this.parent) {
 				this.parent.update(this);
 			}
-		});
+		}.bind(this));
 	},
 	events: {
 		"click [data-hook=drop-zone]": "simulateInputClick",
