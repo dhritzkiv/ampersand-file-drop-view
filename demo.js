@@ -4,21 +4,23 @@ var FileDropView = require('./ampersand-file-drop-view');
 var FormView = require('ampersand-form-view');
 
 var input = new FileDropView({
-    name: 'files',
-    multiple: true,
-    accept: 'image/*'
+	name: 'files',
+	multiple: true,
+	accept: 'image/*'
 });
 
 var form = document.createElement('form');
 form.innerHTML = '<div data-hook="field-container"></div><input type="submit">';
 
 var formView = new FormView({
-    el: form,
-    fields: [input],
-    submitCallback: function (vals) {
-        console.log(vals);
-    }
+	el: form,
+	fields: [input],
+	submitCallback: function (vals) {
+		console.log(vals);
+	}
 });
+
+formView.render();
 
 window.formView = formView;
 
