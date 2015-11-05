@@ -378,7 +378,7 @@ module.exports = View.extend({
 	simulateInputClick: function() {
 		this.input.click();
 	},
-	handleFiles: function(files) {
+	setValue: function(files) {
 
 		if (this._acceptArray.length) {
 			var MIMEtypes = this._acceptArray.map(function(accept) {
@@ -404,7 +404,7 @@ module.exports = View.extend({
 		this.files.add(files);
 	},
 	handleFileInput: function() {
-		this.handleFiles(Array.prototype.slice.apply(this.input.files));
+		this.setValue(Array.prototype.slice.apply(this.input.files));
 	},
 	dragOver: function(event) {
 		event.stopPropagation();
@@ -433,7 +433,7 @@ module.exports = View.extend({
 		event.stopPropagation();
 		event.preventDefault();
 		this.holderHovering = false;
-		this.handleFiles(Array.prototype.slice.apply(event.dataTransfer.files));
+		this.setValue(Array.prototype.slice.apply(event.dataTransfer.files));
 	},
 	documentDragStart: function(event) {
 		event.stopPropagation();
