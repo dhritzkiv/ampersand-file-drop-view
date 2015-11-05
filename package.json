@@ -25,31 +25,32 @@
   "dependencies": {
     "ampersand-collection": "^1.5.0",
     "ampersand-state": "^4.8.0",
-    "ampersand-view": "^9.0.0"
+    "ampersand-view": "^9.0.0",
+    "lodash.assign": "^3.2.0"
   },
   "devDependencies": {
     "ampersand-form-view": "^5.1.1",
+    "ampersand-view-conventions": "^1.1.8",
     "beefy": "^2.1.5",
-    "browserify": "^11.0.1",
-    "function-bind": "^1.0.2",
+    "browserify": "^12.0.1",
+    "jscs": "^2.5.0",
     "jshint": "^2.8.0",
-    "phantomjs": "^1.9.18",
     "precommit-hook": "^3.0.0",
     "run-browser": "^2.0.2",
     "tap-spec": "^4.1.0",
     "tape": "^4.2.0",
-    "tape-run": "^1.1.0"
+    "tape-run": "^2.1.0"
   },
   "scripts": {
-    "validate": "jshint .",
     "start": "run-browser test/index.js",
-    "test": "browserify test/index.js | tape-run -b phantom | tap-spec",
+    "test": "browserify test/index.js | tape-run --browser electron | tap-spec",
     "demo": "beefy demo.js",
-    "lint": "jshint ."
+    "lint": "jshint .",
+    "checkstyle": "jscs ."
   },
   "pre-commit": [
     "lint",
-    "validate",
+    "checkstyle",
     "test"
   ]
 }
