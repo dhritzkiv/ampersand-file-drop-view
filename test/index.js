@@ -11,20 +11,23 @@ test('basic init', function (t) {
 		name: 'file'
 	});
 	input.render();
+	
+	var inputEl = input.el.querySelector('input');
+	var labelEl = input.el.querySelector('[data-hook=label]');
 
-	t.equal(false, input.required);
+	t.equal(false, input.required, 'not a required field by default');
 	t.equal(input.accept, '*/*');
 	t.equal(input._accept, '*/*');
 	t.equal(input._acceptArray.join(), ['*/*'].join());
 	t.equal(input.el.tagName, 'DIV');
-	t.ok(input.el.querySelector('[data-hook=label]'));
-	t.ok(input.el.querySelector('[data-hook=label]').textContent, 'Drag and drop a file');
-	t.ok(input.el.querySelector('input'));
-	t.equal(input.el.querySelector('input').type, 'file');
-	t.equal(input.el.querySelector('input').name, 'file');
-	t.equal(input.el.querySelector('input').getAttribute('style'), 'visibility:hidden;width:0;height:0;');
-	t.equal(input.el.querySelector('[data-hook=label]').textContent, 'Drag and drop a file');
-	t.equal(input.el.querySelector('input').getAttribute('multiple'), null);
+	t.ok(labelEl, 'label element exists');
+	t.equal(labelEl.textContent, 'Drag and drop a file', 'default field label is correct');
+	t.ok(inputEl, 'input element exists');
+	t.equal(input.input, inputEl, 'view\'s `input` property reports the correct input element');
+	t.equal(inputEl.type, 'file', 'input\'s `type` attribute is correct');
+	t.equal(inputEl.name, 'file', 'input\'s `name` attribute is correct');
+	t.equal(inputEl.getAttribute('style'), 'visibility:hidden;width:0;height:0;', 'input has the correct style applied');
+	t.equal(inputEl.getAttribute('multiple'), null, 'input doesn\'t have a `multiple` attribute by default');
 	t.end();
 });
 
@@ -35,9 +38,10 @@ test('label property and element', function(t) {
 	input.render();
 
 	var labelEl = input.el.querySelector('[data-hook=label]');
-	t.equal(input.label, 'Feed me files');
-	t.ok(labelEl);
-	t.equal(labelEl.textContent, 'Feed me files');
+	
+	t.equal(input.label, 'Feed me files', 'custom field label property value is correct');
+	t.ok(labelEl, 'label element exists');
+	t.equal(labelEl.textContent, 'Feed me files', 'custom field label is correct');
 	t.end();
 });
 

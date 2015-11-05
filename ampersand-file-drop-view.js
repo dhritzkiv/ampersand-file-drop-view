@@ -3,6 +3,7 @@
 var View = require("ampersand-view");
 var State = require("ampersand-state");
 var Collection = require("ampersand-collection");
+var assign = require("lodash.assign");
 
 var template = ["<div data-hook=\"drop-zone\">",
 	"<input type=\"file\" style=\"visibility:hidden;width:0;height:0;\"/>",
@@ -58,19 +59,16 @@ var fileViewPropsState = State.extend({
 var FileView = View.extend({
 	template: fileTemplate,
 	initialize: function(opts) {
-		var self = this;
+		
+		assign(this, opts);
 
-		for (var key in opts) {
-			self[key] = opts[key];
-		}
-
-		var file = self.model.file;
+		var file = this.model.file;
 
 		if (this.displayPreview && /image/.test(file.type)) {
 			var reader = new FileReader();
 			reader.onloadend = function() {
-				self.model.preview = reader.result;
-			};
+				this.model.preview = reader.result;
+			}.bind(this);
 			reader.readAsDataURL(file);
 		}
 	},
@@ -154,12 +152,10 @@ function arrayDefault() {
 module.exports = View.extend({
 	template: template,
 	initialize: function() {
-		var self = this;
-
 		this.files.on("add remove", function() {
-			self.getValue();
-			if (self.parent) {
-				self.parent.update(self);
+			this.getValue();
+			if (this.parent) {
+				this.parent.update(this);
 			}
 		});
 	},
@@ -263,13 +259,9 @@ module.exports = View.extend({
 					return false;
 				}
 
-				if (!this.tests.every(function(test) {
+				return this.tests.every(function(test) {
 					return test(this.value);
-				})) {
-					return false;
-				}
-
-				return true;
+				}, this);
 			}
 		},
 		holderHoveringClassToShow: {
@@ -340,23 +332,21 @@ module.exports = View.extend({
 		return this.value;
 	},
 	render: function() {
-		var self = this;
-
 		this.renderWithTemplate(this);
 		this.input = this.query("input[type=file]");
-		this.renderCollection(self.files, FileView, self.queryByHook("files"), {
-			viewOptions: self.itemViewOptions.toJSON()
+		this.renderCollection(this.files, FileView, this.queryByHook("files"), {
+			viewOptions: this.itemViewOptions.toJSON()
 		});
 
-		var boundDocumentDragStart = self.documentDragStart.bind(self);
-		var boundDocumentDragEnd = self.documentDragEnd.bind(self);
+		var boundDocumentDragStart = this.documentDragStart.bind(this);
+		var boundDocumentDragEnd = this.documentDragEnd.bind(this);
 
 		document.body.addEventListener("dragover", eventNoOp);
 		document.body.addEventListener("dragenter", boundDocumentDragStart);
 		document.body.addEventListener("dragleave", boundDocumentDragEnd);
 		document.body.addEventListener("drop", boundDocumentDragEnd);
 
-		self.on("remove", function() {
+		this.on("remove", function() {
 			document.body.removeEventListener("dragover", eventNoOp);
 			document.body.removeEventListener("dragenter", boundDocumentDragStart);
 			document.body.removeEventListener("dragleave", boundDocumentDragEnd);
@@ -366,11 +356,10 @@ module.exports = View.extend({
 		return this;
 	},
 	reset: function() {
-		var self = this;
 		setTimeout(function() {
-			self.files.reset();
-			self.getValue();
-		}, 0);
+			this.files.reset();
+			this.getValue();
+		}.bind(this), 0);
 	},
 	clear: function() {
 		this.reset();
@@ -423,9 +412,9 @@ module.exports = View.extend({
 
 		var rect = event.delegateTarget.getBoundingClientRect();
 
-       // Check if mouse coordinates are outside the element,
-       // since hovering over children causes a leave event;
-		if(event.clientX > rect.left + rect.width || event.clientX < rect.left || event.clientY > rect.top + rect.height || event.clientY < rect.top) {
+		// Check if mouse coordinates are outside the element,
+		// since hovering over children causes a leave event;
+		if (event.clientX > rect.left + rect.width || event.clientX < rect.left || event.clientY > rect.top + rect.height || event.clientY < rect.top) {
 			this.holderHovering = false;
 		}
 	},
