@@ -146,7 +146,12 @@ function arrayDefault() {
 
 module.exports = View.extend({
 	template: template,
-	initialize: function() {
+	initialize: function(opts) {
+
+		if (opts.value) {
+			this.setValue(opts.value);
+		}
+
 		this.listenTo(this.files, "add remove", function() {
 			this.getValue();
 			if (this.parent) {
