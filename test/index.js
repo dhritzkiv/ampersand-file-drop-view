@@ -16,7 +16,7 @@ test('basic init', function (t) {
 		name: 'file'
 	});
 	input.render();
-	
+
 	var inputEl = input.el.querySelector('input');
 	var labelEl = input.el.querySelector('[data-hook=label]');
 
@@ -43,7 +43,7 @@ test('label property and element', function(t) {
 	input.render();
 
 	var labelEl = input.el.querySelector('[data-hook=label]');
-	
+
 	t.equal(input.label, 'Feed me files', 'custom field label property value is correct');
 	t.ok(labelEl, 'label element exists');
 	t.equal(labelEl.textContent, 'Feed me files', 'custom field label is correct');
@@ -111,7 +111,6 @@ test('`accept` property and attribute when passed as string', function(t) {
 	t.equal(input.el.querySelector('input').getAttribute('accept'), 'image/*,video/*');
 	t.end();
 });
-
 
 test('`accept` property and attribute when passed as array', function(t) {
 	var input = new FileDropView({
