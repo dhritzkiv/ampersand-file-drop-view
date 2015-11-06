@@ -62,7 +62,7 @@ Run tests with `npm test`
 
 ### v1.0.0
 
-- ampersand-view-conventions compliance
+- [ampersand-view-conventions](https://github.com/AmpersandJS/ampersand-view-conventions) compliance
 	- supports setting a value (an array of File or Blob-like objects) programatically, including as an initial value
 - more reliable triggering of classes when hovering over the body or the file-holder element
 - addition of `hasFilesClass`
