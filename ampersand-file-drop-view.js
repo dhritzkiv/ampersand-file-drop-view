@@ -147,12 +147,12 @@ function arrayDefault() {
 module.exports = View.extend({
 	template: template,
 	initialize: function() {
-		this.files.on("add remove", function() {
+		this.listenTo(this.files, "add remove", function() {
 			this.getValue();
 			if (this.parent) {
 				this.parent.update(this);
 			}
-		}.bind(this));
+		});
 	},
 	events: {
 		"click [data-hook=drop-zone]": "simulateInputClick",
