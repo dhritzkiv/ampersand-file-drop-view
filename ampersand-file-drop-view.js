@@ -44,7 +44,7 @@ var FilesCollection = Collection.extend({
 var fileViewProps = {
 	fileSizeUnit: {
 		type: "string",
-		default: "KB"
+		default: "kb"
 	},
 	displayPreview: {
 		type: "boolean",
