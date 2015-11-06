@@ -151,3 +151,23 @@ test('`accept` property and attribute when passed as `false`', function(t) {
 	t.equal(input.el.querySelector('input').getAttribute('accept'), '');
 	t.end();
 });
+
+test('`itemViewOptions` with the option to use a different file size unit', function(t) {
+
+	var targetFileSize = 9;//in bytes
+	var dummyFile = new Blob(['a'.repeat(9)], {type: 'text/plain'});
+
+	var input = new FileDropView({
+		itemViewOptions: {
+			fileSizeUnit: 'b'
+		},
+		value: [dummyFile]
+	});
+
+	input.render();
+
+	t.equal(input.el.querySelector('[data-hook=size]').textContent, targetFileSize.toFixed(2), 'displays the correct file size');
+	t.equal(input.el.querySelector('[data-hook=size-unit]').textContent, 'b', 'displays the correct file size unit');
+
+	t.end();
+});
