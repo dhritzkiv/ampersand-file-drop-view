@@ -152,7 +152,7 @@ module.exports = View.extend({
 			this.setValue(opts.value);
 		}
 
-		this.listenTo(this.files, "add remove", function() {
+		this.listenTo(this.files, "add remove reset", function() {
 			this.getValue();
 			if (this.parent) {
 				this.parent.update(this);
@@ -360,19 +360,17 @@ module.exports = View.extend({
 
 		return this;
 	},
-	reset: function() {
-		setTimeout(function() {
-			this.files.reset();
-			this.getValue();
-		}.bind(this), 0);
-	},
 	clear: function() {
-		this.reset();
+		this.files.reset();
 	},
 	simulateInputClick: function() {
 		this.input.click();
 	},
 	setValue: function(files) {
+		this.clear();
+		this.addFiles(files);
+	},
+	addFiles: function(files) {
 
 		if (this._acceptArray.length) {
 			var MIMEtypes = this._acceptArray.map(function(accept) {
@@ -398,7 +396,7 @@ module.exports = View.extend({
 		this.files.add(files);
 	},
 	handleFileInput: function() {
-		this.setValue(Array.prototype.slice.apply(this.input.files));
+		this.addFiles(Array.prototype.slice.apply(this.input.files));
 	},
 	documentDragCounter: 0,
 	documentDragOver: function(event) {
@@ -447,7 +445,7 @@ module.exports = View.extend({
 
 		//contains returns true if the element is itself or a descendent of itself.
 		if (this.el.contains(event.target) && event.dataTransfer.files.length) {
-			this.setValue(Array.prototype.slice.apply(event.dataTransfer.files));
+			this.addFiles(Array.prototype.slice.apply(event.dataTransfer.files));
 		}
 	}
 });
