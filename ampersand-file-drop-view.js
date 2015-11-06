@@ -305,7 +305,7 @@ module.exports = View.extend({
 			type: "class",
 			hook: "drop-zone"
 		},
-		holderHoveringClass: {
+		holderHoveringClassToShow: {
 			type: "class",
 			hook: "drop-zone"
 		},
