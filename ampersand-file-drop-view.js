@@ -59,7 +59,7 @@ var fileViewPropsState = State.extend({
 var FileView = View.extend({
 	template: fileTemplate,
 	initialize: function(opts) {
-		
+
 		assign(this, opts);
 
 		var file = this.model.file;
@@ -140,11 +140,6 @@ var FileView = View.extend({
 	}
 });
 
-function eventNoOp(event) {
-	event.stopPropagation();
-	event.preventDefault();
-}
-
 function arrayDefault() {
 	return [];
 }
@@ -161,11 +156,7 @@ module.exports = View.extend({
 	},
 	events: {
 		"click [data-hook=drop-zone]": "simulateInputClick",
-		"change input[type=file]": "handleFileInput",
-		"dragover [data-hook=drop-zone]": "dragOver",
-		"dragenter [data-hook=drop-zone]": "dragEnter",
-		"dragleave [data-hook=drop-zone]": "dragLeave",
-		"drop [data-hook=drop-zone]": "drop"
+		"change input[type=file]": "handleFileInput"
 	},
 	props: {
 		holderClass: {
@@ -334,23 +325,26 @@ module.exports = View.extend({
 	render: function() {
 		this.renderWithTemplate(this);
 		this.input = this.query("input[type=file]");
+
 		this.renderCollection(this.files, FileView, this.queryByHook("files"), {
 			viewOptions: this.itemViewOptions.toJSON()
 		});
 
-		var boundDocumentDragStart = this.documentDragStart.bind(this);
-		var boundDocumentDragEnd = this.documentDragEnd.bind(this);
+		var boundDocumentDragOver = this.documentDragOver.bind(this);
+		var boundDocumentDragEnter = this.documentDragEnter.bind(this);
+		var boundDocumentDragLeave = this.documentDragLeave.bind(this);
+		var boundDocumentDragDrop = this.documentDragDrop.bind(this);
 
-		document.body.addEventListener("dragover", eventNoOp);
-		document.body.addEventListener("dragenter", boundDocumentDragStart);
-		document.body.addEventListener("dragleave", boundDocumentDragEnd);
-		document.body.addEventListener("drop", boundDocumentDragEnd);
+		document.body.addEventListener("dragover", boundDocumentDragOver);
+		document.body.addEventListener("dragenter", boundDocumentDragEnter);
+		document.body.addEventListener("dragleave", boundDocumentDragLeave);
+		document.body.addEventListener("drop", boundDocumentDragDrop);
 
 		this.on("remove", function() {
-			document.body.removeEventListener("dragover", eventNoOp);
-			document.body.removeEventListener("dragenter", boundDocumentDragStart);
-			document.body.removeEventListener("dragleave", boundDocumentDragEnd);
-			document.body.removeEventListener("drop", boundDocumentDragEnd);
+			document.body.removeEventListener("dragover", boundDocumentDragOver);
+			document.body.removeEventListener("dragenter", boundDocumentDragEnter);
+			document.body.removeEventListener("dragleave", boundDocumentDragLeave);
+			document.body.removeEventListener("drop", boundDocumentDragDrop);
 		});
 
 		return this;
@@ -395,43 +389,52 @@ module.exports = View.extend({
 	handleFileInput: function() {
 		this.setValue(Array.prototype.slice.apply(this.input.files));
 	},
-	dragOver: function(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		event.dataTransfer.effectAllowed = "copy";
-		event.dataTransfer.dropEffect = "copy";
-	},
-	dragEnter: function(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		this.holderHovering = true;
-	},
-	dragLeave: function(event) {
+	documentDragCounter: 0,
+	documentDragOver: function(event) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		var rect = event.delegateTarget.getBoundingClientRect();
+		if (event.target === this.el) {
+			event.dataTransfer.effectAllowed = "copy";
+			event.dataTransfer.dropEffect = "copy";
+		}
+	},
+	documentDragEnter: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.documentDragCounter++;
+		this.documentHovering = true;
 
-		// Check if mouse coordinates are outside the element,
-		// since hovering over children causes a leave event;
-		if (event.clientX > rect.left + rect.width || event.clientX < rect.left || event.clientY > rect.top + rect.height || event.clientY < rect.top) {
+		if (event.target === this.el) {
+			this.holderHovering = true;
+		}
+	},
+	documentDragLeave: function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+		this.documentDragCounter--;
+
+		var rect = this.el.getBoundingClientRect();
+
+		if (!this.documentDragCounter) {
+			this.documentHovering = false;
+		}
+
+		if (!(event.clientX < rect.left + rect.width && event.clientX > rect.left && event.clientY < rect.top + rect.height && event.clientY > rect.top)) {
+			// Check if mouse coordinates are inside the element,
+			// since hovering over children causes a leave event;
 			this.holderHovering = false;
 		}
 	},
-	drop: function(event) {
+	documentDragDrop: function(event) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.holderHovering = false;
-		this.setValue(Array.prototype.slice.apply(event.dataTransfer.files));
-	},
-	documentDragStart: function(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		this.documentHovering = true;
-	},
-	documentDragEnd: function(event) {
-		event.stopPropagation();
-		event.preventDefault();
 		this.documentHovering = false;
+		this.documentDragCounter = 0;
+
+		if (event.target === this.el && event.dataTransfer.files.length) {
+			this.setValue(Array.prototype.slice.apply(event.dataTransfer.files));
+		}
 	}
 });
