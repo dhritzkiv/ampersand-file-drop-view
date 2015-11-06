@@ -400,7 +400,8 @@ module.exports = View.extend({
 		event.stopPropagation();
 		event.preventDefault();
 
-		if (event.target === this.el) {
+		//contains returns true if the element is itself or a descendent of itself.
+		if (this.el.contains(event.target)) {
 			event.dataTransfer.effectAllowed = "copy";
 			event.dataTransfer.dropEffect = "copy";
 		}
@@ -411,7 +412,7 @@ module.exports = View.extend({
 		this.documentDragCounter++;
 		this.documentHovering = true;
 
-		if (event.target === this.el) {
+		if (this.el.contains(event.target)) {
 			this.holderHovering = true;
 		}
 	},
@@ -439,7 +440,8 @@ module.exports = View.extend({
 		this.documentHovering = false;
 		this.documentDragCounter = 0;
 
-		if (event.target === this.el && event.dataTransfer.files.length) {
+		//contains returns true if the element is itself or a descendent of itself.
+		if (this.el.contains(event.target) && event.dataTransfer.files.length) {
 			this.setValue(Array.prototype.slice.apply(event.dataTransfer.files));
 		}
 	}
