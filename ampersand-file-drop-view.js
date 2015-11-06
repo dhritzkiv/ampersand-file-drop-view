@@ -179,6 +179,10 @@ module.exports = View.extend({
 			type: "boolean",
 			default: false
 		},
+		hasFilesClass: {
+			type: "string",
+			default: "has-files"
+		},
 		label: {
 			type: "string",
 			default: "Drag and drop a file"
@@ -240,7 +244,7 @@ module.exports = View.extend({
 			deps: ["value", "required"],
 			fn: function() {
 
-				var filesLength = this.files.length;
+				var filesLength = this.value.length;
 
 				if (this.required && !filesLength) {
 					return false;
@@ -255,24 +259,22 @@ module.exports = View.extend({
 				}, this);
 			}
 		},
-		holderHoveringClassToShow: {
+		_holderHoveringClassToShow: {
 			deps: ["holderHoverClass", "holderHovering"],
 			fn: function () {
-				if (!this.holderHovering) {
-					return "";
-				}
-
-				return this.holderHoverClass;
+				return this.holderHovering ? this.holderHoverClass : "";
 			}
 		},
-		documentHoveringClassToShow: {
+		_documentHoveringClassToShow: {
 			deps: ["documentHoverClass", "documentHovering"],
 			fn: function () {
-				if (!this.documentHovering) {
-					return "";
-				}
-
-				return this.documentHoverClass;
+				return this.documentHovering ? this.documentHoverClass : "";
+			}
+		},
+		_hasFilesClassToShow: {
+			deps: ["value", "hasFilesClass"],
+			fn: function () {
+				return this.value.length ? this.hasFilesClass : "";
 			}
 		}
 	},
@@ -296,11 +298,15 @@ module.exports = View.extend({
 			type: "class",
 			hook: "drop-zone"
 		},
-		holderHoveringClassToShow: {
+		_holderHoveringClassToShow: {
 			type: "class",
 			hook: "drop-zone"
 		},
-		documentHoveringClassToShow: {
+		_documentHoveringClassToShow: {
+			type: "class",
+			hook: "drop-zone"
+		},
+		_hasFilesClassToShow: {
 			type: "class",
 			hook: "drop-zone"
 		},
