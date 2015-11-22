@@ -51,8 +51,14 @@ new FormView({
 
 ## Methods
 
-- setValue(files) `files` is an _array_ of `File` or `Blob` objects.
-- addFiles(files) `files` is an _array_ of `File` or `Blob` objects.
+- `setValue(files)` `files` is an _array_ of `File` or `Blob` objects.
+	- sets the `value` of the view to `files`
+- `addFiles(files)` `files` is an _array_ of `File` or `Blob` objects.
+	- appends the `value` of the view with `files`
+- `clear()`
+	- empties the view's `value` of all files
+- `reset()`
+	- sets the view's `value` to the `value` passed in through the view's constructor options
 
 ## Tests
 
