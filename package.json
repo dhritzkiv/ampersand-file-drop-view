@@ -6,6 +6,7 @@
   "bugs": {
     "url": "https://github.com/dhritzkiv/ampersand-file-drop-view/issues"
   },
+  "files": ["ampersand-file-drop-view.js"],
   "homepage": "https://github.com/dhritzkiv/ampersand-file-drop-view",
   "keywords": [
     "ampersand",
