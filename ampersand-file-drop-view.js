@@ -150,6 +150,7 @@ module.exports = View.extend({
 
 		if (opts.value) {
 			this.setValue(opts.value);
+			this._startingValue = opts.value;
 		}
 
 		this.listenTo(this.files, "add remove reset", function() {
@@ -193,6 +194,10 @@ module.exports = View.extend({
 			default: "Drag and drop a file"
 		},
 		value: {
+			type: "array",
+			default: arrayDefault
+		},
+		_startingValue: {
 			type: "array",
 			default: arrayDefault
 		},
@@ -362,6 +367,9 @@ module.exports = View.extend({
 	},
 	clear: function() {
 		this.files.reset();
+	},
+	reset: function() {
+		this.setValue(this._startingValue);
 	},
 	simulateInputClick: function() {
 		this.input.click();

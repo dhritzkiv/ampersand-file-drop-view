@@ -155,7 +155,7 @@ test('`accept` property and attribute when passed as `false`', function(t) {
 test('`itemViewOptions` with the option to use a different file size unit', function(t) {
 
 	var targetFileSize = 9;//in bytes
-	var dummyFile = new Blob(['a'.repeat(9)], {type: 'text/plain'});
+	var dummyFile = new Blob(['a'.repeat(targetFileSize)], {type: 'text/plain'});
 
 	var input = new FileDropView({
 		itemViewOptions: {
@@ -168,6 +168,47 @@ test('`itemViewOptions` with the option to use a different file size unit', func
 
 	t.equal(input.el.querySelector('[data-hook=size]').textContent, targetFileSize.toFixed(2), 'displays the correct file size');
 	t.equal(input.el.querySelector('[data-hook=size-unit]').textContent, 'b', 'displays the correct file size unit');
+
+	t.end();
+});
+
+test('`reset` method resets value back to the initial value', function(t) {
+
+	var targetFileSize = 9;//in bytes
+	var dummyFile = new Blob(['a'.repeat(targetFileSize)], {type: 'text/plain'});
+	var dummyFile2 = new Blob(['b'.repeat(targetFileSize)], {type: 'text/plain'});
+
+	var input = new FileDropView({
+		value: [dummyFile],
+		multiple: true
+	});
+
+	input.render();
+	input.addFiles([dummyFile2]);
+	t.equal(input.value.length, 2, 'the field contains 2 files');
+	input.reset();
+	t.equal(input.value.length, 1, 'after reset, the field contans the initial amount of files');
+	t.equal(input.value[0], dummyFile, 'after reset, the first file of value is the initial file');
+
+	t.end();
+});
+
+test('`reset` method resets value back to the back to default initial value', function(t) {
+
+	var targetFileSize = 9;//in bytes
+	var dummyFile = new Blob(['a'.repeat(targetFileSize)], {type: 'text/plain'});
+	var dummyFile2 = new Blob(['b'.repeat(targetFileSize)], {type: 'text/plain'});
+
+	var input = new FileDropView({
+		multiple: true
+	});
+
+	input.render();
+	input.addFiles([dummyFile]);
+	input.addFiles([dummyFile2]);
+	t.equal(input.value.length, 2, 'the field contains 2 files');
+	input.reset();
+	t.equal(input.value.length, 0, 'after reset, the field contans the initial amount of files');
 
 	t.end();
 });
