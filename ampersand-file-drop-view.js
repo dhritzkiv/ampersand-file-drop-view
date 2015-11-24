@@ -366,17 +366,17 @@ module.exports = View.extend({
 		return this;
 	},
 	clear: function() {
-		this.files.reset();
+		return this.files.reset();
 	},
 	reset: function() {
-		this.setValue(this._startingValue);
+		return this.setValue(this._startingValue);
 	},
 	simulateInputClick: function() {
 		this.input.click();
 	},
 	setValue: function(files) {
 		this.clear();
-		this.addFiles(files);
+		return this.addFiles(files);
 	},
 	addFiles: function(files) {
 
@@ -401,10 +401,10 @@ module.exports = View.extend({
 			files = files.splice(0, 1);
 		}
 
-		this.files.add(files);
+		return this.files.add(files);
 	},
 	handleFileInput: function() {
-		this.addFiles(Array.prototype.slice.apply(this.input.files));
+		return this.addFiles(Array.prototype.slice.apply(this.input.files));
 	},
 	documentDragCounter: 0,
 	documentDragOver: function(event) {
