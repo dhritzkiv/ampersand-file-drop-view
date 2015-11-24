@@ -452,8 +452,77 @@ module.exports = View.extend({
 		this.documentDragCounter = 0;
 
 		//contains returns true if the element is itself or a descendent of itself.
-		if (this.el.contains(event.target) && event.dataTransfer.files.length) {
-			this.addFiles(Array.prototype.slice.apply(event.dataTransfer.files));
+		if (this.el.contains(event.target)) {
+
+			var dataTransfer = event.dataTransfer;
+			var types = Array.prototype.slice.apply(dataTransfer.types);
+
+			if (dataTransfer.files.length) {
+				this.addFiles(Array.prototype.slice.apply(dataTransfer.files));
+			}
+
+			if (types.length) {
+
+				var self = this;
+
+				var data = (dataTransfer.getData("text") || dataTransfer.getData("text/plain"));
+
+				if (data) {
+					var blob = new Blob([data], {
+						type: "text/plain"
+					});
+
+					this.addFiles(blob);
+				}
+
+				data = (dataTransfer.getData("url") || dataTransfer.getData("text/uri-list"));
+
+				if (data) {
+					data = data.split("\n#").map(function(urlPart) {
+
+						var urlObject = {};
+						var split = urlPart.split("\n");
+
+						if (split.length === 2) {
+							urlObject.name = split[0];//comment
+							urlObject.url = split[1];
+						} else {
+							urlObject.url = split[0];
+						}
+
+						return urlObject;
+					});
+
+					data.forEach(function(urlObject) {
+						var request = new XMLHttpRequest();
+						request.open("GET", urlObject.url, true);// `false` makes the request synchronous
+						request.responseType = "blob";
+						request.onload = function() {
+							if (request.status === 200) {
+								var blob = request.response;
+								self.addFiles([blob]);
+
+								urlObject.name = "casey";
+
+								if (!urlObject.name) {
+									return;
+								}
+
+								self.files.some(function(fileModel) {
+									if (fileModel.file === blob) {
+										fileModel.name = urlObject.name;
+										return true;
+									}
+								});
+							}
+						};
+
+						request.send(null);
+
+					});
+
+				}
+			}
 		}
 	}
 });
