@@ -148,6 +148,8 @@ module.exports = View.extend({
 	template: template,
 	initialize: function(opts) {
 
+		opts = opts || {};
+
 		if (opts.value) {
 			this.setValue(opts.value);
 			this._startingValue = opts.value;
