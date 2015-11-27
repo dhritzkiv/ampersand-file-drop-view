@@ -8,8 +8,7 @@ Drag-and-drop file view based on [ampersand-view](https://github.com/AmpersandJS
 
 Use with `ampersand-form-view`:
 
-````javascript
-
+```javascript
 var FormView = require('ampersand-form-view');
 var FileDropView = require('ampersand-file-drop-view');
 
@@ -28,7 +27,7 @@ new FormView({
 	}
 	
 });
-````
+```
 
 ## Constructor Options
 
@@ -43,6 +42,7 @@ new FormView({
 - `documentHoverClass` _String._ Class to use for the main container when hovering with a selection over the document body element. Defaults to `"document-hover"`.
 - `hasFilesClass` _String._ Class to use for the field has files. Defaults to `"has-files"`.
 - `itemViewOptions` _Object._ Options object to pass to individual item views (see below)
+- `mainIndex` _String._ Which property of the file to use to index. Indexing by a property such as `name` can prevent duplicates being added. See [ampersand-collection](https://github.com/AmpersandJS/ampersand-collection#mainindex-collectionmainindex) for more information.
 
 ## Item View Constructor Options (`itemViewOptions`)
 
