@@ -146,13 +146,17 @@ function arrayDefault() {
 
 module.exports = View.extend({
 	template: template,
-	initialize: function(opts) {
+	initialize: function() {
 
-		opts = opts || {};
+		if (this.value) {
+			this.setValue(this.value);
+			this._startingValue = this.value;
+		}
 
-		if (opts.value) {
-			this.setValue(opts.value);
-			this._startingValue = opts.value;
+		if (this.mainIndex) {
+			this.files.mainIndex = this.mainIndex;
+			//force rebuild of indexes on files collection
+			this.files._reset();
 		}
 
 		this.listenTo(this.files, "add remove reset", function() {
@@ -223,6 +227,9 @@ module.exports = View.extend({
 		tests: {
 			type: "array",
 			default: arrayDefault
+		},
+		mainIndex: {
+			type: "string"
 		}
 	},
 	children: {

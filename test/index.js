@@ -212,3 +212,46 @@ test('`reset` method resets value back to the back to default initial value', fu
 
 	t.end();
 });
+
+test('does not add duplicate files of the same `name` when `mainIndex` is set to `name`', function(t) {
+
+	var targetFileSize = 9;//in bytes
+	var dummyFile = new Blob(['a'.repeat(targetFileSize)], {type: 'text/plain'});
+	var dummyFile2 = new Blob(['b'.repeat(targetFileSize)], {type: 'text/plain'});
+
+	dummyFile.name = 'foo';
+	dummyFile2.name = 'foo';
+
+	var input = new FileDropView({
+		multiple: true,
+		mainIndex: 'name'
+	});
+
+	input.render();
+	input.addFiles([dummyFile]);
+	input.addFiles([dummyFile2]);
+
+	t.equal(input.value.length, 1, 'the field contains only one file');
+	t.end();
+});
+
+test('does add duplicate files of the same `name` when no `mainIndex` is set', function(t) {
+
+	var targetFileSize = 9;//in bytes
+	var dummyFile = new Blob(['a'.repeat(targetFileSize)], {type: 'text/plain'});
+	var dummyFile2 = new Blob(['b'.repeat(targetFileSize)], {type: 'text/plain'});
+
+	dummyFile.name = 'foo';
+	dummyFile2.name = 'foo';
+
+	var input = new FileDropView({
+		multiple: true
+	});
+
+	input.render();
+	input.addFiles([dummyFile]);
+	input.addFiles([dummyFile2]);
+
+	t.equal(input.value.length, 2, 'the field contains two files');
+	t.end();
+});
