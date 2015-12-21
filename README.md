@@ -1,6 +1,6 @@
 # ampersand-file-drop-view
 
-[![Build Status](https://travis-ci.org/dhritzkiv/ampersand-file-drop-view.svg?branch=master)](https://travis-ci.org/dhritzkiv/ampersand-file-drop-view)
+[![Build Status](https://travis-ci.org/dhritzkiv/ampersand-file-drop-view.svg?branch=master)](https://travis-ci.org/dhritzkiv/ampersand-file-drop-view) ![Monthly npm downloads](https://img.shields.io/npm/dm/ampersand-file-drop-view.svg)
 
 Drag-and-drop file view based on [ampersand-view](https://github.com/AmpersandJS/ampersand-form-view), and for use in [ampersand-form-view.](https://github.com/AmpersandJS/ampersand-view)
 
