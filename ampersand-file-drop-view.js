@@ -22,6 +22,13 @@ var fileTemplate = ["<article>",
 var FileState = State.extend({
 	initialize: function(file) {
 		this.set("file", file);
+		
+		//since the following properties are defined as getters in a Blob-like instance,
+		//and these getters have unexpected behaviours when setting through Ampersand-State,
+		//it's a good idea to explicitly assign the properties we need.
+		["size", "name", "type"].forEach(function(prop) {
+			this.set(prop, file[prop]);
+		}, this);
 	},
 	props: {
 		size: "number",
