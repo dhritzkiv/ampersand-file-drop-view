@@ -73,9 +73,11 @@ var FileView = View.extend({
 
 		if (this.displayPreview && /image/.test(file.type)) {
 			var reader = new FileReader();
+			
 			reader.onloadend = function() {
 				this.model.preview = reader.result;
 			}.bind(this);
+			
 			reader.readAsDataURL(file);
 		}
 	},
