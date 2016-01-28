@@ -1,7 +1,7 @@
 {
   "name": "ampersand-file-drop-view",
   "description": "Drag-and-drop file view based on ampersand-view, and for use in ampersand-form-view",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "Daniel Hritzkiv <daniel.hritzkiv@gmail.com>",
   "bugs": {
     "url": "https://github.com/dhritzkiv/ampersand-file-drop-view/issues"
