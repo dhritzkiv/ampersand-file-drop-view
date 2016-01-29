@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "ampersand-collection": "^1.6.1",
-    "ampersand-state": "^4.9.1",
+    "ampersand-state": "^5.0.0",
     "ampersand-view": "^9.0.2",
     "lodash.assign": "^4.0.1"
   },
