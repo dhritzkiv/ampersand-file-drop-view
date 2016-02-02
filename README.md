@@ -29,6 +29,8 @@ new FormView({
 });
 ```
 
+For a live demo, `git clone` this repo, run `npm install` to install the dependencies, and `npm run demo` to start a small local server that hosts the demo html page.
+
 ## Constructor Options
 
 - `name` _String._ *Required.* Name to use. Used by `ampersand-form-view`
