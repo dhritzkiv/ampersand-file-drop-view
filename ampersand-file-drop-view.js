@@ -3,7 +3,7 @@
 var View = require("ampersand-view");
 var State = require("ampersand-state");
 var Collection = require("ampersand-collection");
-var assign = require("lodash.assign");
+var assign = require("lodash/assign");
 
 var template = ["<div data-hook=\"drop-zone\">",
 	"<input type=\"file\" style=\"visibility:hidden;width:0;height:0;\"/>",
