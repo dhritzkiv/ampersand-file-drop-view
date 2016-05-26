@@ -29,7 +29,7 @@
     "ampersand-collection": "^1.6.1",
     "ampersand-state": "^5.0.0",
     "ampersand-view": "^9.0.2",
-    "lodash.assign": "^4.0.1"
+    "lodash": "^4.13.1"
   },
   "devDependencies": {
     "ampersand-form-view": "^5.2.0",
